@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800">
+  <rect width="600" height="800" fill="#16302A"/>
+  <rect x="36" y="36" width="528" height="728" fill="none" stroke="#EEF0EA" stroke-width="2"/>
+  <text x="70" y="290" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="150" letter-spacing="-4" fill="#EEF0EA">ÖNCE</text>
+  <text x="70" y="430" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="150" letter-spacing="-4" fill="#EEF0EA">KAHVE.</text>
+  <g transform="translate(300 580)" fill="none" stroke="#B9D3C4" stroke-width="5" stroke-linecap="round">
+    <path d="M-70 -30 h120 v60 a50 50 0 0 1 -50 50 h-20 a50 50 0 0 1 -50 -50 z"/>
+    <path d="M50 -10 h18 a22 22 0 0 1 0 44 h-18"/>
+    <path d="M-35 -60 q10 -18 0 -36 M-5 -60 q10 -18 0 -36 M25 -60 q10 -18 0 -36"/>
+  </g>
+  <text x="300" y="720" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="28" fill="#EEF0EA">gerisi sonra konuşulur</text>
+</svg>

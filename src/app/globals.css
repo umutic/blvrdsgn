@@ -1,0 +1,109 @@
+@import "tailwindcss";
+@import "lenis/dist/lenis.css";
+
+/* Tasarım tokenları (CLAUDE.md §3.1) — bg-canvas, text-ink, border-line, text-accent… */
+@theme {
+  /* Aydınlık galeri beyazı; renk eserlerden gelir. Vurgu: zümrüt (az kullanılır).
+     Kontrastlar: accent/canvas 5.2:1 · accent-light/night 13.2:1 · muted/canvas 7.5:1 */
+  --color-canvas: #FBFBF9;
+  --color-surface: #F1F1EE;
+  --color-ink: #121214;
+  --color-muted: #52525A;
+  --color-line: #E4E4E0;
+  --color-accent: #0F7A55;
+  --color-accent-light: #A8E0C4;
+  --color-accent-soft: #E2F3EA;
+  --color-night: #111113;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-marquee: marquee var(--marquee-duration, 40s) linear infinite;
+  --animate-marquee-reverse: marquee-reverse var(--marquee-duration, 40s) linear infinite;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  @keyframes marquee-reverse {
+    from { transform: translateX(-50%); }
+    to { transform: translateX(0); }
+  }
+}
+
+@theme inline {
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-line);
+  }
+
+  html {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: #fff;
+  }
+
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@layer utilities {
+  /* İnce film greni — editoryal his */
+  .grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.07;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .text-balance { text-wrap: balance; }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+
+  .link-underline {
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+    transition: background-size 0.5s var(--ease-out-expo);
+  }
+  .link-underline:hover { background-size: 100% 1px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Giriş animasyonu yalnızca html[data-intro="1"] iken görünür (bkz. layout.jsx). */
+.intro-overlay { display: none; }
+html[data-intro='1'] .intro-overlay { display: flex; }
+html[data-intro='1'] body { overflow: hidden; }
+
+
+/* Fraunces'ın "yumuşak" ve "oynak" eksenleri: sanatsal ama okunur başlıklar. */
+.font-display {
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+}

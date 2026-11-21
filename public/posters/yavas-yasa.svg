@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800">
+  <rect width="600" height="800" fill="#EAF2EC"/>
+  <circle cx="420" cy="230" r="150" fill="#F6DCE6"/>
+  <path d="M0 600 C 150 540, 300 660, 600 580 L600 800 L0 800 Z" fill="#9FC9B2"/>
+  <text x="60" y="380" font-family="Georgia, serif" font-style="italic" font-size="172" fill="#12301F">yavaş</text>
+  <text x="66" y="470" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="300" font-size="64" letter-spacing="34" fill="#12301F">YAŞA</text>
+  <line x1="66" y1="510" x2="300" y2="510" stroke="#12301F" stroke-width="2"/>
+  <text x="66" y="740" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" letter-spacing="6" fill="#FBFBF9">BLVRDSGN · SLOW SERIES</text>
+</svg>

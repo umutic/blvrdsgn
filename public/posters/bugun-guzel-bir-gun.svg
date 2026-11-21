@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800">
+  <rect width="600" height="800" fill="#F3F3F0"/>
+  <circle cx="300" cy="300" r="170" fill="#0F7A55"/>
+  <rect x="0" y="300" width="600" height="500" fill="#F3F3F0"/>
+  <g fill="none" stroke="#0F7A55" stroke-width="3">
+    <line x1="80" y1="300" x2="520" y2="300"/>
+    <line x1="140" y1="322" x2="460" y2="322"/>
+    <line x1="200" y1="344" x2="400" y2="344"/>
+  </g>
+  <text x="300" y="470" text-anchor="middle" font-family="Georgia, serif" font-size="78" fill="#0E0E10" font-style="italic">Bugün</text>
+  <text x="300" y="560" text-anchor="middle" font-family="Georgia, serif" font-size="78" fill="#0E0E10">güzel bir</text>
+  <text x="300" y="650" text-anchor="middle" font-family="Georgia, serif" font-size="78" fill="#0E0E10" font-style="italic">gün.</text>
+  <text x="300" y="740" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" letter-spacing="6" fill="#6B6B75">BLVRDSGN · NO. 09</text>
+</svg>
