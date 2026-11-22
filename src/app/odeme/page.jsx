@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Gift } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -11,13 +13,17 @@ import { useHasMounted } from '@/hooks/useHasMounted';
 import { orderService } from '@/services/orderService';
 import { calculateCartTotals, formatTL, getFrame, getSize } from '@/utils/pricing';
 
+const GIFT_NOTE_MAX = 250;
+
 export default function CheckoutPage() {
   const mounted = useHasMounted();
   const router = useRouter();
   const { items, coupon, note, clearCart } = useCartStore();
   const [submitting, setSubmitting] = useState(false);
-  const { register, handleSubmit, watch, formState: { errors } } = useForm({ defaultValues: { invoiceType: 'bireysel' } });
+  const { register, handleSubmit, watch, formState: { errors } } = useForm({ defaultValues: { invoiceType: 'bireysel', isGift: false, giftHidePrices: true, giftMessage: '' } });
   const invoiceType = watch('invoiceType');
+  const isGift = watch('isGift');
+  const giftMessage = watch('giftMessage') ?? '';
 
   if (!mounted) return null;
 
@@ -47,6 +53,9 @@ export default function CheckoutPage() {
         totals: { subtotal: totals.subtotal, discount: totals.discount, shipping: totals.shipping, total: totals.total },
         couponCode: totals.discount > 0 ? coupon?.code : null,
         note,
+        gift: values.isGift
+          ? { isGift: true, recipientName: (values.giftRecipient || '').trim(), message: (values.giftMessage || '').trim(), hidePrices: Boolean(values.giftHidePrices) }
+          : null,
       });
       clearCart();
       toast.success(`Siparişiniz alındı: ${order.id}`);
@@ -94,6 +103,50 @@ export default function CheckoutPage() {
             )}
           </Fieldset>
 
+          <fieldset>
+            <legend className="mb-4 text-xs uppercase tracking-[0.2em] text-muted">Hediye</legend>
+            <label className={`flex cursor-pointer items-start gap-4 border p-5 transition-colors ${isGift ? 'border-ink bg-surface' : 'border-line hover:border-ink/40'}`}>
+              <input type="checkbox" {...register('isGift')} className="mt-1 size-4 accent-ink" />
+              <span className="flex-1">
+                <span className="flex items-center gap-2 font-display text-xl"><Gift className="size-5 text-accent" strokeWidth={1.5} /> Bu sipariş bir hediye</span>
+                <span className="mt-1 block text-sm text-muted">Tablonuz özel hediye ambalajıyla ve isterseniz notunuzla birlikte gönderilir. Hediye paketi ücretsizdir.</span>
+              </span>
+            </label>
+            <AnimatePresence initial={false}>
+              {isGift && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                  className="overflow-hidden"
+                >
+                  <div className="grid gap-4 border border-t-0 border-ink p-5 sm:grid-cols-2">
+                    <Field label="Hediye alıcısının adı (isteğe bağlı)" className="sm:col-span-2" placeholder="Kartta hitap edilecek isim" {...register('giftRecipient')} />
+                    <label className="block sm:col-span-2">
+                      <span className="mb-1.5 flex items-baseline justify-between text-sm">
+                        <span>Hediye notunuz <span className="text-muted">(isteğe bağlı)</span></span>
+                        <span className={`text-xs tabular-nums ${giftMessage.length > GIFT_NOTE_MAX - 20 ? 'text-accent' : 'text-muted'}`}>{giftMessage.length}/{GIFT_NOTE_MAX}</span>
+                      </span>
+                      <textarea
+                        rows={4}
+                        maxLength={GIFT_NOTE_MAX}
+                        placeholder="Örn. İyi ki doğdun! Yeni evinin duvarları senin kadar güzel olsun."
+                        {...register('giftMessage')}
+                        className="w-full resize-none border border-line bg-transparent px-3 py-2.5 font-display text-lg leading-snug outline-none focus:border-ink"
+                      />
+                      <span className="mt-1 block text-xs text-muted">Hediyenize eşlik edecek notunuz bizim için önemli: özenle bir karta basılıp paketin içine yerleştirilir.</span>
+                    </label>
+                    <label className="flex items-center gap-2 text-sm sm:col-span-2">
+                      <input type="checkbox" {...register('giftHidePrices')} className="size-4 accent-ink" />
+                      Paketin içine fiyat bilgisi ve fatura koyulmasın
+                    </label>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </fieldset>
+
           <p className="bg-surface p-4 text-sm text-muted">
             Demo mağaza: ödeme adımı simüle edilir, kart bilgisi alınmaz. Sipariş localStorage’a kaydedilir ve Admin &gt; Siparişler ekranında görünür.
           </p>
@@ -119,6 +172,7 @@ export default function CheckoutPage() {
             <Row label="Ara Toplam" value={formatTL(totals.subtotal)} />
             {totals.discount > 0 && <Row label={`İndirim (${coupon.code})`} value={`−${formatTL(totals.discount)}`} />}
             <Row label="Kargo" value={totals.shipping ? formatTL(totals.shipping) : 'Ücretsiz'} />
+            {isGift && <Row label="Hediye paketi" value="Ücretsiz" />}
             <div className="flex justify-between border-t border-line pt-2 text-base font-semibold">
               <span>Toplam</span><span>{formatTL(totals.total)}</span>
             </div>

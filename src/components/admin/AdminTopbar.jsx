@@ -17,7 +17,7 @@ export function AdminTopbar({ session, onLogout, orders = [], products = [] }) {
   const [query, setQuery] = useState('');
   const [openPanel, setOpenPanel] = useState(null); // 'search' | 'bell' | 'user'
   const inputRef = useRef(null);
-  const canOrders = hasPermission(session.role, 'MANAGE_ORDERS');
+  const canOrders = hasPermission(session.role, 'VIEW_ORDERS');
   const canProducts = hasPermission(session.role, 'MANAGE_PRODUCTS');
 
   useEffect(() => {

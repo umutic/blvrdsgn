@@ -1,19 +1,18 @@
 import { DATA_PROVIDER } from '@/config/env';
-import { DEMO_ADMIN_USERS } from '@/data/adminUsers';
 import { createPendingSupabaseProvider } from './supabaseClient';
+import { userService } from './userService';
+import { auditService } from './auditService';
 
 /**
- * Demo kimlik doğrulama. Supabase'e geçişte supabase.auth.signInWithPassword +
- * kullanıcı profilindeki rol alanı ile değiştirilecek.
+ * Demo kimlik doğrulama: kullanıcılar userService koleksiyonundan doğrulanır, böylece
+ * panelden eklenen/pasif yapılan kullanıcılar girişe anında yansır. Supabase'e geçişte
+ * supabase.auth.signInWithPassword + profiles.role / profiles.is_active ile değiştirilecek.
  */
 const localProvider = {
   async login(email, password) {
-    const user = DEMO_ADMIN_USERS.find(
-      (u) => u.email === String(email).trim().toLowerCase() && u.password === password
-    );
-    if (!user) throw new Error('E-posta veya şifre hatalı.');
-    const { password: _omit, ...session } = user;
-    return { ...session, loggedInAt: new Date().toISOString() };
+    const user = await userService.authenticate(email, password);
+    await auditService.log({ actor: user, category: 'auth', message: 'Panele giriş yaptı' });
+    return { id: user.id, name: user.name, email: user.email, role: user.role, loggedInAt: new Date().toISOString() };
   },
   async logout() {},
 };

@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Frame, Printer, RotateCcw, Truck } from 'lucide-react';
 import { Marquee } from '@/components/motion/Marquee';
+import { REVIEWS } from '@/data/reviews';
 
 const FEATURES = [
   { icon: Printer, title: 'Arşiv kalitesinde baskı', text: '12 renk pigment mürekkep, 200 yıl solmayan 310 gr müze kâğıdı.' },
@@ -11,14 +12,6 @@ const FEATURES = [
   { icon: RotateCcw, title: '14 gün koşulsuz iade', text: 'Duvarınıza yakışmazsa, soru sormadan geri alıyoruz.' },
 ];
 
-// Demo amaçlı örnek yorumlar.
-const REVIEWS = [
-  { text: 'Çerçeve kalitesi fotoğraflardan bile iyi. Salonun havası tamamen değişti.', name: 'Elif K.', city: 'İstanbul' },
-  { text: 'Oda önizlemesi sayesinde boyutu doğru seçtim, tam beklediğim gibi geldi.', name: 'Mert A.', city: 'Ankara' },
-  { text: 'Paketleme kusursuzdu. Galata posteri ofisin yıldızı oldu.', name: 'Selin D.', city: 'İzmir' },
-  { text: 'Çocuk odası için aldığımız iki poster harika, renkler çok canlı.', name: 'Burak Ş.', city: 'Bursa' },
-  { text: 'Hat koleksiyonu modern evimize çok yakıştı. Tekrar alacağım.', name: 'Zeynep Y.', city: 'Konya' },
-];
 
 export function Features() {
   return (

@@ -6,7 +6,7 @@ import { motion, useMotionValue, useScroll, useSpring, useTransform } from 'fram
 import { ArrowDownRight, ArrowRight, Star } from 'lucide-react';
 import { Magnetic } from '@/components/motion/Magnetic';
 import { RoomComposite } from '../RoomComposite';
-import { FramedArt } from '../FramedArt';
+import { HeroAmbient } from './HeroAmbient';
 import { useUiStore } from '@/store/useUiStore';
 import { productService } from '@/services/productService';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
@@ -23,11 +23,11 @@ const CYCLE_MS = 3800;
 export function Hero() {
   const introDone = useUiStore((s) => s.introDone);
   const { data } = useServiceQuery(() => productService.getAllProducts(), productService.subscribe);
+  const all = data ?? INITIAL_PRODUCTS;
   const products = useMemo(() => {
-    const all = data ?? INITIAL_PRODUCTS;
     const curated = HERO_SLUGS.map((slug) => all.find((p) => p.slug === slug)).filter(Boolean);
     return curated.length ? curated : all.filter((p) => p.orientation === 'dikey').slice(0, 6);
-  }, [data]);
+  }, [all]);
 
   const [index, setIndex] = useState(0);
   useEffect(() => {
@@ -51,16 +51,11 @@ export function Hero() {
   const my = useMotionValue(0);
   const px = useSpring(mx, { stiffness: 60, damping: 20 });
   const py = useSpring(my, { stiffness: 60, damping: 20 });
-  const px2 = useTransform(px, (v) => v * -1.6);
-  const py2 = useTransform(py, (v) => v * -1.6);
   const onMove = (e) => {
     const r = e.currentTarget.getBoundingClientRect();
     mx.set(((e.clientX - r.left) / r.width - 0.5) * 30);
     my.set(((e.clientY - r.top) / r.height - 0.5) * 30);
   };
-
-  const floatA = products[(index + 1) % products.length];
-  const floatB = products[(index + 2) % products.length];
 
   return (
     <section ref={ref} onMouseMove={onMove} className="relative flex min-h-[100svh] items-center overflow-hidden bg-canvas pt-[108px] text-ink">
@@ -71,7 +66,7 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(18,18,20,.035)_1px,transparent_1px)] bg-[size:120px_100%]" />
 
       <div className="relative mx-auto grid w-full max-w-[1440px] items-center gap-14 px-6 pb-20 lg:grid-cols-12 lg:px-10">
-        <motion.div style={{ y: textY, opacity: fade }} className="min-w-0 lg:col-span-7">
+        <motion.div style={{ y: textY, opacity: fade }} className="min-w-0 lg:col-span-6">
           <motion.p
             className="flex items-center gap-3 text-xs font-medium uppercase tracking-[0.22em] text-muted"
             initial={{ opacity: 0, x: -20 }}
@@ -84,11 +79,11 @@ export function Hero() {
 
           <h1
             aria-label="Duvarlarınız bir galeriye dönüşsün."
-            className="mt-8 font-display text-[clamp(3rem,6.4vw,7rem)] font-normal leading-[1.02] tracking-[-0.02em]"
+            className="mt-8 font-display text-[clamp(3rem,5.8vw,6.5rem)] font-normal leading-[1.02] tracking-[-0.02em]"
           >
             <MaskLine play={introDone} delay={0.1}>Duvarlarınız</MaskLine>
             <MaskLine play={introDone} delay={0.24} className="pl-[0.8em] sm:pl-[1.5em]">
-              <span className="mr-[0.35em] inline-block -translate-y-[1.1em] font-sans text-[max(0.15em,11px)] font-semibold uppercase not-italic tracking-[0.2em] text-muted">bir</span>
+              <span className="mr-[0.25em] font-display not-italic">bir</span>
               <span className="italic text-accent">galeriye</span>
             </MaskLine>
             <MaskLine play={introDone} delay={0.38} className="flex items-end gap-[0.28em]">
@@ -155,14 +150,26 @@ export function Hero() {
         </motion.div>
 
         {/* Canlı oda önizlemesi */}
-        <motion.div style={{ y: sceneY }} className="relative min-w-0 lg:col-span-5">
+        <motion.div
+          style={{ y: sceneY, width: 'min(100%, calc((100svh - 190px) * 0.8))' }}
+          className="relative ml-auto min-w-0 lg:col-span-6 xl:mr-2"
+        >
+          {/* Galeri paspartusu: sahnenin etrafında ince çerçeve */}
+          <motion.div
+            aria-hidden="true"
+            className="pointer-events-none absolute -inset-5 border border-ink/10 xl:-inset-7"
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={introDone ? { opacity: 1, scale: 1 } : undefined}
+            transition={{ duration: 1.4, ease: EASE, delay: 0.9 }}
+          />
+
           <motion.div
             initial={{ clipPath: 'inset(100% 0 0 0)', scale: 1.1 }}
             animate={introDone ? { clipPath: 'inset(0% 0 0 0)', scale: 1 } : undefined}
             transition={{ duration: 1.6, ease: EASE, delay: 0.2 }}
-            className="relative shadow-[0_40px_80px_-40px_rgba(18,18,20,.35)]"
+            className="relative shadow-[0_60px_120px_-50px_rgba(18,18,20,.5)]"
           >
-            <RoomComposite scene={SCENE} product={current} sizeId="50x70" frameId={frameId} sizes="(min-width:1024px) 40vw, 100vw" priority animateKey={`${current.id}-${frameId}`} />
+            <RoomComposite scene={SCENE} product={current} sizeId="50x70" frameId={frameId} sizes="(min-width:1024px) 48vw, 100vw" priority animateKey={`${current.id}-${frameId}`} />
 
             <motion.div
               className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-4 bg-canvas/90 px-5 py-4 text-ink shadow-lg backdrop-blur-md"
@@ -202,25 +209,8 @@ export function Hero() {
             </div>
           </motion.div>
 
-          {/* Yüzen posterler */}
-          <motion.div
-            className="absolute -left-16 top-[12%] hidden w-[24%] xl:block"
-            style={{ x: px, y: py }}
-            initial={{ opacity: 0, rotate: -8 }}
-            animate={introDone ? { opacity: 1, rotate: -6 } : undefined}
-            transition={{ delay: 1, duration: 1.2, ease: EASE }}
-          >
-            <FramedArt image={floatA.image} frame={getFrame('siyah-ahsap')} ratio={3 / 4} thickness="6%" sizes="12vw" />
-          </motion.div>
-          <motion.div
-            className="absolute -right-8 bottom-[18%] hidden w-[20%] xl:block"
-            style={{ x: px2, y: py2 }}
-            initial={{ opacity: 0, rotate: 10 }}
-            animate={introDone ? { opacity: 1, rotate: 5 } : undefined}
-            transition={{ delay: 1.15, duration: 1.2, ease: EASE }}
-          >
-            <FramedArt image={floatB.image} frame={getFrame('gold-metal')} mat ratio={3 / 4} thickness="4%" sizes="10vw" />
-          </motion.div>
+          {/* Çevrede rastgele beliren eserler ve yorumlar */}
+          <HeroAmbient products={all} play={introDone} px={px} py={py} />
         </motion.div>
       </div>
 

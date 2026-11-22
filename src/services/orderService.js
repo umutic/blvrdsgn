@@ -1,5 +1,5 @@
 import { DATA_PROVIDER } from '@/config/env';
-import { STORAGE_KEYS } from '@/config/storageKeys';
+import { SEED_VERSION, STORAGE_KEYS } from '@/config/storageKeys';
 import { generateSeedOrders, ORDER_STATUSES } from '@/data/initialOrders';
 import { readCollection, writeCollection, subscribeCollection } from './local/localDb';
 import { createPendingSupabaseProvider } from './supabaseClient';
@@ -8,7 +8,9 @@ import { createOrderNumber } from '@/utils/id';
 export { ORDER_STATUSES };
 
 const KEY = STORAGE_KEYS.ORDERS;
-const load = () => readCollection(KEY, () => generateSeedOrders());
+// Sipariş seed'ine özel sürüm: hediye alanı eklendiğinde yalnızca örnek siparişler yenilenir.
+const ORDERS_SEED_VERSION = `${SEED_VERSION}.gift-1`;
+const load = () => readCollection(KEY, () => generateSeedOrders(), ORDERS_SEED_VERSION);
 
 const localProvider = {
   async getAllOrders() {

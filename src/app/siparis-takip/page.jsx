@@ -66,6 +66,12 @@ function OrderTracking() {
             ))}
           </ul>
           <p className="mt-4 text-right font-semibold">Toplam: {formatTL(order.totals.total)}</p>
+          {order.gift?.isGift && (
+            <div className="mt-6 border-t border-line pt-5 text-sm">
+              <p className="text-xs uppercase tracking-[0.2em] text-accent">Hediye paketi{order.gift.recipientName ? ` · ${order.gift.recipientName}` : ''}</p>
+              {order.gift.message ? <p className="mt-2 font-display text-xl leading-snug">“{order.gift.message}”</p> : <p className="mt-2 text-muted">Hediye notu eklenmedi.</p>}
+            </div>
+          )}
         </div>
       )}
     </div>

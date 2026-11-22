@@ -3,11 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ExternalLink, Images, LayoutDashboard, LogOut, ShoppingBag, TicketPercent, Sparkles } from 'lucide-react';
+import { ExternalLink, Images, LayoutDashboard, LogOut, ShieldCheck, ShoppingBag, TicketPercent, Sparkles } from 'lucide-react';
 import { getAllowedRoutes, ROLE_LABELS } from '@/config/permissions';
 import { Avatar } from './Avatar';
 
-const ICONS = { dashboard: LayoutDashboard, orders: ShoppingBag, products: Images, coupons: TicketPercent };
+const ICONS = { dashboard: LayoutDashboard, orders: ShoppingBag, products: Images, coupons: TicketPercent, users: ShieldCheck };
 
 export function AdminSidebar({ session, onLogout, badges = {} }) {
   const pathname = usePathname();

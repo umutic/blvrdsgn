@@ -15,6 +15,9 @@ export const useAuthStore = create(
         set({ session });
         return session;
       },
+      /** Kullanıcı kaydı panelden değiştiğinde (rol, ad, e-posta) oturumu günceller. */
+      syncSession: (user) =>
+        set((state) => (state.session ? { session: { ...state.session, name: user.name, email: user.email, role: user.role } } : state)),
       logout: async () => {
         await authService.logout();
         set({ session: null });

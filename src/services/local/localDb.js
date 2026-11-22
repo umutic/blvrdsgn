@@ -13,12 +13,13 @@ const seedKey = (key) => `${key}__seed`;
  * Koleksiyonu okur. Anahtar yoksa veya seed sürümü eskiyse seed verisini yazar.
  * @param {string} key
  * @param {any[] | (() => any[])} seed - dizi veya tembel üretici fonksiyon
+ * @param {string} [version] - koleksiyona özel seed sürümü (yalnızca o koleksiyonu yeniler)
  */
-export function readCollection(key, seed) {
+export function readCollection(key, seed, version = SEED_VERSION) {
   const getSeed = () => clone(typeof seed === 'function' ? seed() : seed);
   if (!isBrowser()) return getSeed();
   const raw = window.localStorage.getItem(key);
-  const upToDate = window.localStorage.getItem(seedKey(key)) === SEED_VERSION;
+  const upToDate = window.localStorage.getItem(seedKey(key)) === version;
   if (raw !== null && upToDate) {
     try {
       return JSON.parse(raw);
@@ -28,7 +29,7 @@ export function readCollection(key, seed) {
   }
   const fresh = getSeed();
   writeCollection(key, fresh, { silent: true });
-  window.localStorage.setItem(seedKey(key), SEED_VERSION);
+  window.localStorage.setItem(seedKey(key), version);
   return fresh;
 }
 

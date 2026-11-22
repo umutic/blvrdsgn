@@ -37,7 +37,7 @@ function greeting() {
 export default function AdminDashboardPage() {
   const session = useAuthStore((s) => s.session);
   const canAnalytics = usePermission('VIEW_ANALYTICS');
-  const canOrders = usePermission('MANAGE_ORDERS');
+  const canOrders = usePermission('VIEW_ORDERS');
   const [range, setRange] = useState(30);
 
   const { data: orders } = useServiceQuery(canAnalytics || canOrders ? orderService.getAllOrders : noOrders, orderService.subscribe, [canAnalytics, canOrders]);

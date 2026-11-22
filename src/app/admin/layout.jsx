@@ -12,7 +12,10 @@ import { useHasMounted } from '@/hooks/useHasMounted';
 import { useServiceQuery } from '@/hooks/useServiceQuery';
 import { orderService } from '@/services/orderService';
 import { productService } from '@/services/productService';
-import { canAccessRoute, getAllowedRoutes, getDefaultAdminRoute, hasPermission } from '@/config/permissions';
+import { roleService } from '@/services/roleService';
+import { userService } from '@/services/userService';
+import { toast } from 'sonner';
+import { canAccessRoute, getAllowedRoutes, getDefaultAdminRoute, hasPermission, notifyPermissionMatrix, ROLE_LABELS, setPermissionMatrix } from '@/config/permissions';
 
 /** Admin Auth + RBAC Guard (CLAUDE.md §4.2). */
 export default function AdminLayout({ children }) {
@@ -48,7 +51,47 @@ export default function AdminLayout({ children }) {
 }
 
 function AdminFrame({ session, onLogout, pathname, children }) {
-  const canOrders = hasPermission(session.role, 'MANAGE_ORDERS');
+  // Yetki matrisi: yönetici panelden değiştirdiğinde tüm panel anında yeni matrisle çizilir.
+  const { data: matrix } = useServiceQuery(roleService.getMatrix, roleService.subscribe);
+  if (matrix) setPermissionMatrix(matrix); // idempotent; abone sayfalar effect'te bilgilendirilir
+  useEffect(() => {
+    if (matrix) notifyPermissionMatrix();
+  }, [matrix]);
+
+  // Oturum doğrulama: kullanıcı silinir/pasif yapılırsa oturum kapanır; rol değişirse anında yansır.
+  const syncSession = useAuthStore((s) => s.syncSession);
+  const { data: me, loading: meLoading } = useServiceQuery(() => userService.getUserById(session.id), userService.subscribe, [session.id]);
+  useEffect(() => {
+    if (meLoading) return;
+    if (!me || !me.isActive) {
+      toast.error(me ? 'Hesabınız pasif yapıldı. Oturum kapatıldı.' : 'Hesabınız bulunamadı. Oturum kapatıldı.');
+      onLogout();
+      return;
+    }
+    if (me.role !== session.role || me.name !== session.name || me.email !== session.email) {
+      if (me.role !== session.role) toast.info(`Rolünüz güncellendi: ${ROLE_LABELS[me.role]}`);
+      syncSession(me);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [me, meLoading]);
+
+  if (!matrix) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#F6F6F7]">
+        <span className="size-6 animate-spin rounded-full border-2 border-ink/20 border-t-ink" />
+      </div>
+    );
+  }
+
+  return (
+    <AdminShell session={session} onLogout={onLogout} pathname={pathname}>
+      {children}
+    </AdminShell>
+  );
+}
+
+function AdminShell({ session, onLogout, pathname, children }) {
+  const canOrders = hasPermission(session.role, 'VIEW_ORDERS');
   // Sipariş yetkisi olmayan rol sipariş verisini hiç çekmez.
   const { data: orders } = useServiceQuery(canOrders ? orderService.getAllOrders : async () => [], orderService.subscribe, [canOrders]);
   const { data: products } = useServiceQuery(productService.getAllProducts, productService.subscribe);

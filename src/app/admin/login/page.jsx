@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
-import { ArrowRight, Eye, EyeOff, Palette, ShieldCheck, TrendingUp } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, Headset, Palette, ShieldCheck, TrendingUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/store/useAuthStore';
 import { getDefaultAdminRoute, ROLE_LABELS } from '@/config/permissions';
@@ -18,6 +18,7 @@ const ROLE_META = {
   admin: { icon: ShieldCheck, desc: 'Tüm sayfalar, silme, kupon ve ayarlar' },
   sales_director: { icon: TrendingUp, desc: 'Ciro raporları ve sipariş yönetimi' },
   catalog_editor: { icon: Palette, desc: 'Ürün kataloğu ve içerik düzenleme' },
+  support: { icon: Headset, desc: 'Siparişleri görüntüleme, müşteri desteği' },
 };
 const EASE = [0.16, 1, 0.3, 1];
 

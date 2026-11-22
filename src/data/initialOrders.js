@@ -10,6 +10,14 @@ export const ORDER_STATUSES = ['Hazırlanıyor', 'Baskı Aşamasında', 'Kargoya
 const FIRST = ['Elif', 'Mert', 'Zeynep', 'Can', 'Ayşe', 'Emre', 'Deniz', 'Selin', 'Burak', 'Ece', 'Kerem', 'Defne', 'Ali', 'Naz', 'Ozan', 'İpek', 'Barış', 'Melis', 'Kaan', 'Yağmur'];
 const LAST = ['Yılmaz', 'Kaya', 'Demir', 'Şahin', 'Çelik', 'Aydın', 'Öztürk', 'Arslan', 'Doğan', 'Koç', 'Kurt', 'Aksoy'];
 const CITIES = [['İstanbul', 'Kadıköy'], ['İstanbul', 'Beşiktaş'], ['Ankara', 'Çankaya'], ['İzmir', 'Urla'], ['İzmir', 'Karşıyaka'], ['Bursa', 'Nilüfer'], ['Antalya', 'Muratpaşa'], ['Eskişehir', 'Tepebaşı']];
+const GIFT_MESSAGES = [
+  'İyi ki doğdun! Yeni evinin duvarları senin kadar güzel olsun.',
+  'Yeni evinize hoş geldiniz. Sevgiyle, Ece & Kaan',
+  'Mutlu yıllar canım annem, seni çok seviyorum.',
+  'Yeni ofisinde bol şans! Bu tablo sana ilham versin.',
+  '',
+  'Evlilik yıldönümümüz kutlu olsun ❤',
+];
 const COMPANIES = ['Kaya Mimarlık Ltd.', 'Nova Ofis A.Ş.', 'Atölye Kare', 'Moda Kafe Ltd.'];
 
 /** Deterministik PRNG (mulberry32) — her kurulumda aynı içerik, tarihler bugüne göre. */
@@ -27,6 +35,7 @@ function rng(seed) {
 /** Son 60 güne yayılmış, hafif artan trendli örnek siparişler üretir. */
 export function generateSeedOrders(now = Date.now()) {
   const rand = rng(20261121);
+  const giftRand = rng(1225); // hediye alanları ayrı akıştan: diğer seed alanları değişmez
   const pick = (arr) => arr[Math.floor(rand() * arr.length)];
   const DAY = 86400000;
   const orders = [];
@@ -63,7 +72,10 @@ export function generateSeedOrders(now = Date.now()) {
         items,
         totals: { subtotal: totals.subtotal, discount: totals.discount, shipping: totals.shipping, total: totals.total },
         couponCode: totals.discount > 0 ? coupon.code : null,
-        note: rand() < 0.12 ? 'Hediye paketi olabilir mi?' : '',
+        note: rand() < 0.12 ? 'Kapıcıya bırakılabilir.' : '',
+        gift: giftRand() < 0.18
+          ? { isGift: true, recipientName: `${FIRST[Math.floor(giftRand() * FIRST.length)]} ${LAST[Math.floor(giftRand() * LAST.length)]}`, message: GIFT_MESSAGES[Math.floor(giftRand() * GIFT_MESSAGES.length)], hidePrices: giftRand() < 0.7 }
+          : null,
       });
     }
   }
